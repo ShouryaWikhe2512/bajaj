@@ -11,6 +11,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_community.retrievers import BM25Retriever
 from langchain.retrievers import EnsembleRetriever
 from langgraph.graph import StateGraph, END
+from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader, UnstructuredEmailLoader
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -45,19 +46,47 @@ api_key_manager = ApiKeyManager(api_keys)
 
 
 # --- Document Loading (Expanded) ---
+# def load_and_split_documents(doc_path: str, password: Optional[str] = None):
+#     """
+#     Loads PDF, DOCX, or EML documents and splits them into chunks.
+#     """
+#     print(f"Loading document from path: {doc_path}...")
+#     _, file_extension = os.path.splitext(doc_path)
+#     file_extension = file_extension.lower()
+
+#     if file_extension == '.pdf':
+#         loader = PyPDFLoader(file_path=doc_path, password=password)
+#     elif file_extension == '.docx':
+#         loader = Docx2txtLoader(file_path=doc_path)
+#     elif file_extension == '.eml':
+#         loader = UnstructuredEmailLoader(file_path=doc_path)
+#     else:
+#         raise ValueError(f"Unsupported file type: {file_extension}")
+
+#     documents = loader.load()
+#     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
+#     chunks = text_splitter.split_documents(documents)
+#     print(f"Split document into {len(chunks)} chunks.")
+#     return chunks
+
+# --- Document Loading (Using PyPDFLoader) ---
 def load_and_split_documents(doc_path: str, password: Optional[str] = None):
     """
     Loads PDF, DOCX, or EML documents and splits them into chunks.
+    Uses PyPDFLoader for PDF files.
     """
     print(f"Loading document from path: {doc_path}...")
     _, file_extension = os.path.splitext(doc_path)
     file_extension = file_extension.lower()
 
     if file_extension == '.pdf':
+        # Use PyPDFLoader as requested, which supports passwords.
         loader = PyPDFLoader(file_path=doc_path, password=password)
     elif file_extension == '.docx':
+        # Reverting to Docx2txtLoader for consistency.
         loader = Docx2txtLoader(file_path=doc_path)
     elif file_extension == '.eml':
+        # UnstructuredEmailLoader remains effective for email files.
         loader = UnstructuredEmailLoader(file_path=doc_path)
     else:
         raise ValueError(f"Unsupported file type: {file_extension}")
@@ -65,9 +94,8 @@ def load_and_split_documents(doc_path: str, password: Optional[str] = None):
     documents = loader.load()
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
     chunks = text_splitter.split_documents(documents)
-    print(f"Split document into {len(chunks)} chunks.")
+    print(f"Split document into {len(chunks)} chunks using standard loaders.")
     return chunks
-
 
 # --- Vector Store and Retriever ---
 def create_vector_store(chunks):
