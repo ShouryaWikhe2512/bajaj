@@ -1,0 +1,21 @@
+# Web Framework and Server
+fastapi[all]
+uvicorn[standard]
+
+gunicorn
+# Core LangChain and AI Provider
+langchain
+langchain-community
+langchain-google-genai
+
+# Retrieval, Search, and Document Parsing
+langchain-chroma
+pypdf
+docx2txt
+rank_bm25
+unstructured[pdf,docx,eml]
+
+# Utilities
+python-dotenv
+requests
+tiktoken
